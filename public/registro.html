@@ -3,21 +3,24 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="theme-color" content="#166534">
+	<link rel="manifest" href="/manifest.webmanifest">
 	<title>Registro de usuario</title>
 </head>
 <body>
 	<main>
 		<h1>Crear cuenta</h1>
 		<p>Completa todos los campos para enviar tu solicitud.</p>
-		<form action="#" method="post" enctype="multipart/form-data">
+		<p id="installStatus" role="status" aria-live="polite"></p>
+		<form action="/api/registro" method="post">
 			<div class="form-grid">
 				<div class="field">
 					<label for="nombres">Nombres</label>
-					<input id="nombres" name="nombres" type="text" autocomplete="given-name" required>
+					<input id="nombres" name="nombres" type="text" autocomplete="given-name" maxlength="80" required>
 				</div>
 				<div class="field">
 					<label for="apellidos">Apellidos</label>
-					<input id="apellidos" name="apellidos" type="text" autocomplete="family-name" required>
+					<input id="apellidos" name="apellidos" type="text" autocomplete="family-name" maxlength="80" required>
 				</div>
 				<div class="field">
 					<label for="tipo-documento">Tipo de documento</label>
@@ -26,24 +29,24 @@
 						<option value="cc">Cédula de ciudadanía</option>
 						<option value="ce">Cédula de extranjería</option>
 						<option value="ti">Tarjeta de identidad</option>
-						<option value="pasaporte">Pasaporte</option>
+						<option value="pas">Pasaporte</option>
 					</select>
 				</div>
 				<div class="field">
 					<label for="numero-documento">Número de documento</label>
-					<input id="numero-documento" name="numero_documento" type="text" required>
+					<input id="numero-documento" name="numero_documento" type="text" maxlength="20" required>
 				</div>
 				<div class="field">
-					<label for="correo">Correo electrónico</label>
-					<input id="correo" name="correo" type="email" autocomplete="email" required>
+					<label for="email">Correo electrónico</label>
+					<input id="email" name="email" type="email" autocomplete="email" maxlength="254" required>
 				</div>
 				<div class="field">
 					<label for="telefono">Teléfono</label>
-					<input id="telefono" name="telefono" type="tel" autocomplete="tel" required>
+					<input id="telefono" name="telefono" type="tel" autocomplete="tel" maxlength="20" required>
 				</div>
 				<div class="field full-width">
 					<label for="contrasena">Contraseña</label>
-					<input id="contrasena" name="contrasena" type="password" autocomplete="new-password" minlength="8" required>
+					<input id="contrasena" name="contrasena" type="password" autocomplete="new-password" minlength="8" maxlength="128" required>
 					<p class="hint">Debe tener al menos 8 caracteres.</p>
 				</div>
 				<div class="field full-width">
@@ -65,8 +68,10 @@
 				</div>
 			</div>
 			<button type="submit">Enviar solicitud</button>
+			<p id="registro-mensaje" role="status" aria-live="polite"></p>
 		</form>
 	</main>
+	<script src="js/pwa.js"></script>
 	<script src="js/register.js" defer></script>
 </body>
 </html>
