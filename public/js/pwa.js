@@ -1,6 +1,5 @@
 console.log("PWA.JS CARGADO");
 if ("serviceWorker" in navigator) {
-    // Esperamos al load para no competir con la carga inicial de la página.
     window.addEventListener("load", async () => {
         try {
             const reg = await navigator.serviceWorker.register("/sw.js");
@@ -15,21 +14,20 @@ if ("serviceWorker" in navigator) {
 const installBtn = document.getElementById("installBtn");
 let deferredPrompt = null;
 
-// El navegador dispara este evento cuando la app cumple los requisitos de instalación (manifest válido + service worker + HTTPS o localhost).
 window.addEventListener("beforeinstallprompt", (e) => {
-    e.preventDefault(); // evitamos el mini-banner automático de Chrome
-    deferredPrompt = e; // y nos guardamos el evento para usarlo en nuestro botón
+    e.preventDefault();
+    deferredPrompt = e;
     if (installBtn) installBtn.hidden = false;
 });
 
 installBtn?.addEventListener("click", async () => {
     if (!deferredPrompt) return;
 
-    deferredPrompt.prompt(); // muestra el diálogo nativo del navegador
+    deferredPrompt.prompt();
     const { outcome } = await deferredPrompt.userChoice;
     console.log("Resultado de la instalación:", outcome);
 
-    deferredPrompt = null; // el evento solo se puede usar una vez
+    deferredPrompt = null;
     installBtn.hidden = true;
 });
 
