@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Registro de usuario</title>
+</head>
+<body>
+	<main>
+		<h1>Crear cuenta</h1>
+		<p>Completa todos los campos para enviar tu solicitud.</p>
+		<form action="#" method="post" enctype="multipart/form-data">
+			<div class="form-grid">
+				<div class="field">
+					<label for="nombres">Nombres</label>
+					<input id="nombres" name="nombres" type="text" autocomplete="given-name" required>
+				</div>
+				<div class="field">
+					<label for="apellidos">Apellidos</label>
+					<input id="apellidos" name="apellidos" type="text" autocomplete="family-name" required>
+				</div>
+				<div class="field">
+					<label for="tipo-documento">Tipo de documento</label>
+					<select id="tipo-documento" name="tipo_documento" required>
+						<option value="" selected disabled>Selecciona una opción</option>
+						<option value="cc">Cédula de ciudadanía</option>
+						<option value="ce">Cédula de extranjería</option>
+						<option value="ti">Tarjeta de identidad</option>
+						<option value="pasaporte">Pasaporte</option>
+					</select>
+				</div>
+				<div class="field">
+					<label for="numero-documento">Número de documento</label>
+					<input id="numero-documento" name="numero_documento" type="text" required>
+				</div>
+				<div class="field">
+					<label for="correo">Correo electrónico</label>
+					<input id="correo" name="correo" type="email" autocomplete="email" required>
+				</div>
+				<div class="field">
+					<label for="telefono">Teléfono</label>
+					<input id="telefono" name="telefono" type="tel" autocomplete="tel" required>
+				</div>
+				<div class="field full-width">
+					<label for="contrasena">Contraseña</label>
+					<input id="contrasena" name="contrasena" type="password" autocomplete="new-password" minlength="8" required>
+					<p class="hint">Debe tener al menos 8 caracteres.</p>
+				</div>
+				<div class="field full-width">
+					<label for="eps">EPS (o Particular)</label>
+					<select id="eps" name="eps" required>
+						<option value="" selected disabled>Selecciona una opción</option>
+						<option value="eps-vida-plena">EPS Vida Plena (ficticia)</option>
+						<option value="eps-salud-activa">EPS Salud Activa (ficticia)</option>
+						<option value="eps-bienestar-total">EPS Bienestar Total (ficticia)</option>
+						<option value="eps-nueva-esperanza">EPS Nueva Esperanza (ficticia)</option>
+						<option value="eps-integral">EPS Integral (ficticia)</option>
+						<option value="particular">Particular</option>
+					</select>
+				</div>
+				<div class="field full-width" id="documento-eps-field" hidden>
+					<label for="documento-eps">Adjuntar documento de la EPS</label>
+					<input id="documento-eps" name="documento_eps" type="file" accept=".pdf,.jpg,.jpeg,.png">
+					<p class="hint">Obligatorio si seleccionas una EPS. Formatos permitidos: PDF, JPG o PNG.</p>
+				</div>
+			</div>
+			<button type="submit">Enviar solicitud</button>
+		</form>
+	</main>
+	<script src="js/register.js" defer></script>
+</body>
+</html>
