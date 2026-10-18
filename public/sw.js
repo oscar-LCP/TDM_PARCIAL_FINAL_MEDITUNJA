@@ -1,5 +1,5 @@
 // Al cambiar la versión, el navegador instala un SW nuevo y borra las cachés viejas.
-const VERSION = "v1";
+const VERSION = "v4";
 const SHELL_CACHE = `shell-${VERSION}`; // archivos de la app (HTML, CSS, JS, iconos)
 const DATA_CACHE = `data-${VERSION}`; // respuestas de la API
 
@@ -7,19 +7,12 @@ const DATA_CACHE = `data-${VERSION}`; // respuestas de la API
 const SHELL_ASSETS = [
     "/",
     "/index.html",
-    "/register.html",
-    //"/offline.html",
-    //"/css/styles.css",
+    "/login.html",
+    "/registro.html",
     "/js/register.js",
-    //"/js/catalog.js",
-    "/js/theme.js",
     "/js/pwa.js",
-    //"/js/services/api.js",
-    //"/js/ui/ui.js",
     "/manifest.webmanifest",
-    //"/icons/icon-192-01.png",
-    //"/icons/icon-512-01.png",
-    //"/icons/icon-maskable-512-01.png"
+    "/icons/meditunja.svg"
 ];
 
 /* ---- 1. INSTALL: se ejecuta una vez, al registrar el SW ---- */
