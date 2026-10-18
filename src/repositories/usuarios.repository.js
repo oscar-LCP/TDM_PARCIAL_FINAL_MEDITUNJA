@@ -72,6 +72,9 @@ class UsuariosRepository {
       apellidos: datos.apellidos,
       email: datos.email,
       telefono: datos.telefono ?? null,
+      eps: datos.eps,
+      password_hash: datos.password_hash,
+      documento_eps: datos.documento_eps ?? null,
       activo: false,
       estado_registro: 'pendiente',
       fecha_registro: new Date().toISOString()
