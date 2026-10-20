@@ -2,17 +2,23 @@ const crypto = require('node:crypto');
 const fs = require('node:fs/promises');
 const path = require('node:path');
 const { promisify } = require('node:util');
-const usuariosRepository = require('../repositories/usuarios.repository');
+const usuariosRepository = require('../repositories/usuarios_repository');
 
 const scrypt = promisify(crypto.scrypt);
 const TIPOS_DOCUMENTO_PERMITIDOS = new Set(['CC', 'TI', 'CE', 'PAS']);
 const EPS_PERMITIDAS = new Set([
-  'eps-vida-plena',
-  'eps-salud-activa',
-  'eps-bienestar-total',
-  'eps-nueva-esperanza',
-  'eps-integral',
-  'particular'
+  'nueva-eps',
+  'famisanar',
+  'sanitas',
+  'sura',
+  'salud-total'
+]);
+const IPS_PERMITIDAS = new Set([
+  'hospital-san-rafael-de-tunja',
+  'ese-santiago-de-tunja',
+  'clinica-medilaser',
+  'clinica-los-andes',
+  'clinica-chicamocha'
 ]);
 const TAMANO_MAXIMO_ARCHIVO = 5 * 1024 * 1024;
 const CARPETA_DOCUMENTOS = path.resolve(__dirname, '../../uploads/eps');
@@ -83,14 +89,28 @@ const registrarUsuario = async (req, res) => {
       telefono,
       contrasena,
       eps,
+      ips,
       documento_eps: archivo
     } = req.body;
 
     if (!esTexto(nombres, 80) || !esTexto(apellidos, 80) ||
         !esTexto(numero_documento, 20) || !esTexto(email, 254) ||
-        typeof contrasena !== 'string' || contrasena.length < 8 || contrasena.length > 128 ||
-        typeof eps !== 'string') {
+        typeof contrasena !== 'string' || contrasena.length < 8 || contrasena.length > 128) {
       return responderError(res, 400, 'Datos inválidos', 'Revisa los campos obligatorios y sus longitudes.');
+    }
+
+    if ((eps !== undefined && eps !== null && typeof eps !== 'string') ||
+        (ips !== undefined && ips !== null && typeof ips !== 'string')) {
+      return responderError(res, 400, 'Datos inválidos', 'Los campos EPS e IPS deben ser texto.');
+    }
+
+    const epsSeleccionada = typeof eps === 'string' ? eps.trim() : null;
+    const ipsSeleccionada = typeof ips === 'string' ? ips.trim() : null;
+    const tieneEPS = Boolean(epsSeleccionada);
+    const tieneIPS = Boolean(ipsSeleccionada);
+
+    if (!tieneEPS || !tieneIPS) {
+      return responderError(res, 400, 'EPS e IPS requeridas', 'Debes seleccionar una EPS y una IPS.');
     }
 
     const tipoDoc = String(tipo_documento).trim().toUpperCase();
@@ -98,7 +118,6 @@ const registrarUsuario = async (req, res) => {
     const correo = String(email).trim().toLowerCase();
     const nombre = nombres.trim();
     const apellido = apellidos.trim();
-    const epsSeleccionada = eps.trim();
     const telefonoNormalizado = telefono == null ? '' : String(telefono).trim();
 
     if (!TIPOS_DOCUMENTO_PERMITIDOS.has(tipoDoc)) {
@@ -107,19 +126,15 @@ const registrarUsuario = async (req, res) => {
 
     if (!/^[A-Za-z0-9.-]{4,20}$/.test(numDoc) ||
         !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo) ||
-        !EPS_PERMITIDAS.has(epsSeleccionada) ||
+        (tieneEPS && !EPS_PERMITIDAS.has(epsSeleccionada)) ||
+        (tieneIPS && !IPS_PERMITIDAS.has(ipsSeleccionada)) ||
         (telefonoNormalizado && !/^\+?[0-9\s()-]{7,20}$/.test(telefonoNormalizado))) {
-      return responderError(res, 400, 'Datos inválidos', 'Revisa el documento, correo, teléfono y EPS seleccionados.');
+      return responderError(res, 400, 'Datos inválidos', 'Revisa el documento, correo, teléfono, EPS e IPS seleccionados.');
     }
 
-    let documento = null;
-    if (epsSeleccionada !== 'particular') {
-      documento = obtenerDocumento(archivo);
-      if (!documento) {
-        return responderError(res, 400, 'Documento EPS inválido', 'Adjunta un PDF, JPG o PNG válido de máximo 5 MB.');
-      }
-    } else if (archivo) {
-      return responderError(res, 400, 'Adjunto no permitido', 'No adjuntes documento si seleccionas Particular.');
+    const documento = obtenerDocumento(archivo);
+    if (!documento) {
+      return responderError(res, 400, 'Documento EPS inválido', 'Adjunta un PDF, JPG o PNG válido de máximo 5 MB.');
     }
 
     const existeDocumento = await usuariosRepository.buscarPorTipoYNumero(tipoDoc, numDoc);
@@ -147,6 +162,7 @@ const registrarUsuario = async (req, res) => {
       email: correo,
       telefono: telefonoNormalizado || null,
       eps: epsSeleccionada,
+      ips: ipsSeleccionada,
       password_hash: await crearHashContrasena(contrasena),
       documento_eps: rutaDocumentoGuardado ? path.basename(rutaDocumentoGuardado) : null
     });
@@ -158,12 +174,14 @@ const registrarUsuario = async (req, res) => {
         nombres: nuevoUsuario.nombres,
         apellidos: nuevoUsuario.apellidos,
         email: nuevoUsuario.email,
+        eps: nuevoUsuario.eps,
+        ips: nuevoUsuario.ips,
         estado_registro: nuevoUsuario.estado_registro
       }
     });
   } catch (error) {
     if (rutaDocumentoGuardado) await fs.unlink(rutaDocumentoGuardado).catch(() => {});
-    console.error('Error en POST /api/registro:', error);
+    console.error('Error en POST /api/registro:', error.code || 'ERROR_INTERNO');
     return responderError(res, 500, 'Error interno del servidor', 'Ocurrió un error al procesar la solicitud.');
   }
 };
